@@ -1,0 +1,8 @@
+# IntelliJ project files
+.idea
+itoms
+kissops/migrations
+login/migrations
+static/AdminLTE-2.3.7
+db.sqlite3
+/db.sqlite3
