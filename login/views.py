@@ -57,7 +57,7 @@ def login(request):
             return HttpResponseRedirect('/')
         else:
             return render(request, 'login.html', {'loginFailed': True})
-    elif request.method == 'GET'and request.user.is_authenticated():
+    elif request.method == 'GET' and request.user.is_authenticated():
         return HttpResponseRedirect('/')
     else:
         return render(request, 'login.html')
@@ -66,3 +66,19 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect('/login/')
+
+
+def register(request):
+    from django.contrib.auth.forms import UserCreationForm
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # form.email = request.POST.get('email')  # this is not work.
+            form.save()
+            if request.POST.get('username') is not None and request.POST.get('email') is not None:
+                User.objects.filter(username=request.POST.get('username')).update(email=request.POST.get('email'))
+            return HttpResponseRedirect('/login/')
+        else:
+            return render(request, 'register.html', {'formFailed': True})
+    else:
+        return render(request, 'register.html')

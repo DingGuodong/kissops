@@ -24,7 +24,7 @@ SECRET_KEY = 'b%f&_#_jr9#@4$_)%xla-1u4o#p_p*oqq19!_(uw7b5n5&gqp('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -132,7 +132,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = False
 EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_PORT = 25
-EMAIL_HOST_USER = 'noreply@huntor.cn'
-EMAIL_HOST_PASSWORD = 'huntor_nor_123'
-DEFAULT_FROM_EMAIL = 'noreply <noreply@huntor.cn>'
-ADMINS = 'dinggd@huntor.cn'
+EMAIL_HOST_USER = 'noreply@example.com'
+EMAIL_HOST_PASSWORD = 'password here'
+DEFAULT_FROM_EMAIL = 'noreply <noreply@example.com>'
+ADMINS = 'dinggd@example.com'

@@ -17,14 +17,19 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from kissops import views
-from login.views import index, login, logout
+from login.views import index, login, logout, register
+
+from django.views.generic.base import RedirectView
+from django.conf import settings
 
 admin.autodiscover()
 
 urlpatterns = [
+    url(r'^favicon.ico$', RedirectView.as_view(url=getattr(settings, 'FAVICON_PATH'))),
     url(r'^admin/', admin.site.urls),
     url(r'^$', index),
     url(r'^index/', views.index),
-    url(r'login/', login),
-    url(r'logout/', logout, name='logout'),
+    url(r'^login/$', login, name='login'),
+    url(r'^logout/$', logout, name='logout'),
+    url(r'^register/$', register, name='register'),
 ]
