@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'favicon',
     'bootstrap3',
     'login',
+    'inventory.host',
 ]
 
 MIDDLEWARE_CLASSES = [

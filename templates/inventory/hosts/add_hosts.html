@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add hosts</title>
+</head>
+<body>
+<h1>Hosts</h1>
+<p><a href="{% url 'list_hosts' %}">list hosts</a> <a href="{% url 'modify_hosts' %}">modify hosts</a></p>
+{% if add_success %}
+    <p>hostname added successfully!</p>
+{% endif %}
+{% if form_error %}
+    {{ form_error }}
+    <a href="{% url 'add_hosts' %}">back</a>
+{% else %}
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+        <input type="submit" value="ok">
+    </form>
+{% endif %}
+
+
+</body>
+</html>

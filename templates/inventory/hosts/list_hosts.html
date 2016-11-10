@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hosts List</title>
+</head>
+<body>
+<h1>Hosts</h1>
+<p><a href="{% url 'modify_hosts' %}">modify hosts</a> <a href="{% url 'add_hosts' %}">add hosts</a></p>
+<ul>
+    {% if hosts %}
+        {% for host in hosts %}
+            <li>{{ host.hosts_hosts }}</li>
+        {% endfor %}
+    {% else %}
+        <p>Hosts list is empty.</p>
+    {% endif %}
+
+</ul>
+</body>
+</html>
