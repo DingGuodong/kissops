@@ -4,6 +4,33 @@ from django import forms
 
 
 # Create your views here.
+def database_error(request, message):
+    if message == '' or message is None:
+        message = 'Error detail is not given.'
+    context = {
+        'database_error': message,
+    }
+    return render(request, 'exception/error.html', context)
+
+
+def database_error_decorator(func):
+    from functools import wraps
+    from django.utils.decorators import available_attrs
+
+    def decorator(view_func):
+        @wraps(view_func, assigned=available_attrs(view_func))
+        def _wrapped_view(request, *args, **kwargs):
+            try:
+                return view_func(request, *args, **kwargs)
+            except Exception as e:
+                return database_error(request, message=e.message)
+
+        return _wrapped_view
+
+    return decorator(func)
+
+
+@database_error_decorator
 def list_hosts(request):
     hosts = Hosts.objects.order_by('-hosts_hosts')
     context = {
@@ -22,6 +49,7 @@ class add_hosts_form(forms.ModelForm):
         fields = '__all__'
 
 
+@database_error_decorator
 def add_hosts(request):
     if request.method == 'POST':
         form = add_hosts_form(request.POST)
@@ -48,6 +76,7 @@ def add_hosts(request):
         return render(request, 'inventory/hosts/add_hosts.html', context)
 
 
+@database_error_decorator
 def modify_hosts(request):
     fields = Hosts.objects.all().values()
 
