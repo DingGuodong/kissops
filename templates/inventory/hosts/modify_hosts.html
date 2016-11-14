@@ -19,17 +19,17 @@
 <ul>
     {% if fields %}
         {% for field in fields %}
-            <li>{{ field.hosts_hosts }}
+            <li>{{ field.hostname }}
                 <form method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="hostname_to_delete" value="{{ field.hosts_hosts }}">
+                    <input type="hidden" name="hostname_to_delete" value="{{ field.hostname }}">
                     <input type="hidden" name="action" value="delete">
                     <input type="submit" value="delete">
                 </form>
             </li>
             <form method="post">
                 {% csrf_token %}
-                <input type="hidden" name="old_hostname" value="{{ field.hosts_hosts }}">
+                <input type="hidden" name="old_hostname" value="{{ field.hostname }}">
                 <input type="hidden" name="action" value="modify">
                 {% for item, value in field.items %}
 

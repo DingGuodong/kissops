@@ -10,7 +10,7 @@
 <ul>
     {% if hosts %}
         {% for host in hosts %}
-            <li>{{ host.hosts_hosts }}</li>
+            <li>{{ host.hostname }}</li>
         {% endfor %}
     {% else %}
         <p>Hosts list is empty.</p>

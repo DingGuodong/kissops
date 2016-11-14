@@ -32,7 +32,7 @@ def database_error_decorator(func):
 
 @database_error_decorator
 def list_hosts(request):
-    hosts = Hosts.objects.order_by('-hosts_hosts')
+    hosts = Hosts.objects.order_by('-hostname')
     context = {
         'hosts': hosts
     }
@@ -42,10 +42,6 @@ def list_hosts(request):
 class add_hosts_form(forms.ModelForm):
     class Meta:
         model = Hosts
-        # fields = [
-        #     'hosts_hosts', 'hosts_type', 'hosts_ip_public', 'hosts_ip_private',
-        #     'hosts_user', 'hosts_user_is_privilege',
-        #     'hosts_user_is_sudo', 'hosts_user_password']
         fields = '__all__'
 
 
@@ -81,8 +77,8 @@ def modify_hosts(request):
     fields = Hosts.objects.all().values()
 
     if request.method == 'POST':
-        if request.POST.get('hosts_hosts') != '' and request.POST.get('old_hostname') != request.POST.get(
-                'hosts_hosts'):
+        if request.POST.get('hostname') != '' and request.POST.get('old_hostname') != request.POST.get(
+                'hostname'):
             context = {
                 'form_error': True,
                 'fields': fields,
@@ -101,14 +97,14 @@ def modify_hosts(request):
                         form_dict[key] = int(form_dict[key])
             if len(form_dict.keys()) != 0:
                 # update fields
-                obj = Hosts.objects.get(hosts_hosts=request.POST.get('old_hostname'))
+                obj = Hosts.objects.get(hostname=request.POST.get('old_hostname'))
                 for key, value in form_dict.items():
                     setattr(obj, key, value)
                 obj.save()
 
                 # # update fields using update_or_create()
                 # Hosts.objects.update_or_create(
-                #     hosts_hosts=request.POST.get('old_hostname'), defaults=form_dict
+                #     hostname=request.POST.get('old_hostname'), defaults=form_dict
                 # )
 
                 context = {
@@ -125,7 +121,7 @@ def modify_hosts(request):
                 }
                 return render(request, 'inventory/hosts/modify_hosts.html', context)
         elif request.POST.get('action') == 'delete':
-            obj = Hosts.objects.get(hosts_hosts=request.POST.get('hostname_to_delete'))
+            obj = Hosts.objects.get(hostname=request.POST.get('hostname_to_delete'))
             obj.delete()
             context = {
                 'form_error': False,

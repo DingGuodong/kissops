@@ -4,8 +4,8 @@ from .models import Hosts
 
 # Register your models here.
 class HostsList(admin.ModelAdmin):
-    list_display = ('hosts_hosts', 'hosts_type', 'hosts_ip_private',)
-    search_fields = ('hosts_hosts', 'hosts_ip_private')
+    list_display = ('hostname', 'type', 'private_ip',)
+    search_fields = ('hostname', 'private_ip')
 
 
 admin.site.register(Hosts, HostsList)

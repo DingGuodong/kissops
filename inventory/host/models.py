@@ -1,18 +1,31 @@
 from __future__ import unicode_literals
 
 from django.db import models
+import uuid
 
 
 # Create your models here.
 class Hosts(models.Model):
-    hosts_hosts = models.CharField(primary_key=True, max_length=128, help_text="host name, IP address or name.")
-    hosts_type = models.IntegerField(default=0, help_text="0, UNIX/Linux; 1, Windows")
-    hosts_ip_public = models.CharField(max_length=20, help_text="public ip address")
-    hosts_ip_private = models.CharField(max_length=20, help_text="private ip address")
-    hosts_user = models.CharField(max_length=20, help_text="user name")
-    hosts_user_is_privilege = models.IntegerField(default=0, help_text="0, root/with sudo; 1, normal user")
-    hosts_user_is_sudo = models.IntegerField(default=0, help_text="0, sudo; 1, non-sudo")
-    hosts_user_password = models.CharField(max_length=128, help_text="user password")
+    # https://docs.djangoproject.com/en/1.8/ref/models/fields/#uuidfield
+    uuid = models.UUIDField(primary_key=True, auto_created=True, default=uuid.uuid4, editable=False)
+    hostname = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Hostname',
+                                help_text="host name, IP address or name.")
+    type = models.IntegerField(default=0, blank=True, null=True, verbose_name=u'Type',
+                               choices=((0, u'UNIX/Linux'), (1, u'Windows')),
+                               help_text="0, UNIX/Linux; 1, Windows")
+    public_ip = models.GenericIPAddressField(max_length=20, blank=True, null=True, verbose_name=u'Public IP',
+                                             help_text="public ip address")
+    private_ip = models.GenericIPAddressField(max_length=20, blank=True, null=True, verbose_name=u'Private IP',
+                                              help_text="private ip address")
+    username = models.CharField(max_length=20, blank=True, null=True, verbose_name=u'Username', help_text="user name")
+    is_privilege = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=u'Is Privilege',
+                                           choices=((True, u'True'), (False, u'False')),
+                                           help_text="True, root/with sudo; False, normal user")
+    is_sudo = models.NullBooleanField(default=True, blank=True, null=True, verbose_name=u'Is Sudo',
+                                      choices=((True, u'True'), (False, u'False')),
+                                      help_text="True, sudo; False, non-sudo")
+    password = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Password',
+                                help_text="user password")
 
     # def __str__(self):  # __unicode__ on Python 2
     #     return self.hosts_hosts
