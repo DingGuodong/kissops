@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'bootstrap3',
     'login',
     'inventory.host',
+    'inventory.project',
+    'inventory.datacenter',
+    'inventory.device',
+    'inventory.machine',
 ]
 
 MIDDLEWARE_CLASSES = [
