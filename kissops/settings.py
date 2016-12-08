@@ -81,12 +81,36 @@ WSGI_APPLICATION = 'kissops.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.10/topics/db/multi-db/
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
+    'itoms_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'devdb',
+        'USER': 'dev',
+        'PASSWORD': 'dEvp@ssw0rd',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'CONN_MAX_AGE': None
+    },
+
+}
+
+# Using routers
+# https://docs.djangoproject.com/en/1.10/topics/db/multi-db/#topics-db-multi-db-routing
+
+DATABASE_ROUTERS = [
+    'kissops.database_routers.ItomsRouter',
+]
+
+DATABASE_APPS_MAPPING = {
+    # example:
+    # 'app_name':'database_name',
+    'itoms': 'itoms_db',
 }
 
 # Password validation
