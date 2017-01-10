@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TOP_DIR = os.path.dirname(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -38,10 +39,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'DEBUG',
-            # 'class': 'logging.FileHandler',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 2,
-            'backupCount': 5,
+            'class': 'logging.FileHandler',
             'filename': '/tmp/django/debug.log',
             'formatter': 'simple'
         },
@@ -55,13 +53,13 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['file'],
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
             'propagate': False,
         },
     },
@@ -105,7 +103,7 @@ ROOT_URLCONF = 'kissops.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(TOP_DIR, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -128,11 +126,11 @@ WSGI_APPLICATION = 'kissops.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(TOP_DIR, 'db.sqlite3'),
     },
     'itoms_db': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'devdb',
+        'NAME': 'devdb_test',
         'USER': 'dev',
         'PASSWORD': 'dEvp@ssw0rd',
         'HOST': '127.0.0.1',
@@ -156,7 +154,7 @@ DATABASE_APPS_MAPPING = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -180,10 +178,6 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Shanghai'
 
-DATETIME_INPUT_FORMATS = [
-    '%Y-%m-%d %H:%M:%S.%f',  # '2006-10-25 14:30:59.000200'
-]
-
 USE_I18N = True
 
 USE_L10N = True
@@ -199,7 +193,7 @@ FAVICON_PATH = STATIC_URL + 'images/favicon.ico'
 
 STATIC_ROOT = STATIC_URL
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(TOP_DIR, 'static'),
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

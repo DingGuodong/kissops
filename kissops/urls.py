@@ -17,8 +17,9 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from kissops import views
-from login.views import index, login, logout, register, profile
+from login.views import index, login, logout, register, profile, management
 from inventory.host.views import list_hosts, add_hosts, modify_hosts
+from itoms.views import test_json
 
 from django.views.generic.base import RedirectView
 from django.conf import settings
@@ -28,6 +29,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^favicon.ico$', RedirectView.as_view(url=getattr(settings, 'FAVICON_PATH'))),
     url(r'^admin/', admin.site.urls),
+    url(r'^management$', management, name='management'),
     url(r'^$', views.index, name='index'),
     url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, name='logout'),
@@ -36,4 +38,5 @@ urlpatterns = [
     url(r'^list_hosts/$', list_hosts, name='list_hosts'),
     url(r'^add_hosts/$', add_hosts, name='add_hosts'),
     url(r'^modify_hosts/$', modify_hosts, name='modify_hosts'),
+    url(r'^json/$', test_json, name='test_json'),
 ]

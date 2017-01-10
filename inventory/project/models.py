@@ -6,6 +6,11 @@ import uuid
 
 # Create your models here.
 class Projects(models.Model):
+    class Meta:
+        # http://stackoverflow.com/questions/18659308/admin-site-appending-letter-s-to-end-of-each-model-table-name-on-django
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#verbose-name-plural
+        verbose_name_plural = "Projects"
+
     uuid = models.UUIDField(primary_key=True, auto_created=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Project Name',
                             help_text="Project Name")

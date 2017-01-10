@@ -12,6 +12,12 @@ def index(request):
     return HttpResponseRedirect('/')
 
 
+def management(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/')
+    return HttpResponseRedirect('/admin/')
+
+
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
