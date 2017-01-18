@@ -14,6 +14,8 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(BASE_DIR)
 try:
+    print "Admin --> http://127.0.0.1:8000/admin/"
+    print "App   --> http://127.0.0.1:8000/admin/itoms/app/"
     os.system("python manage.py runserver")
 except OSError as e:
     print e.message
