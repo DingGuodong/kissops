@@ -23,7 +23,13 @@ TOP_DIR = os.path.dirname(BASE_DIR)
 SECRET_KEY = 'b%f&_#_jr9#@4$_)%xla-1u4o#p_p*oqq19!_(uw7b5n5&gqp('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG_SETTING = os.getenv('ENABLE_DEBUG', 'True').lower().strip()
+if DEBUG_SETTING in "true|yes|on|1|enable":
+    DEBUG = True
+elif DEBUG_SETTING in "false|no|off|0|disable":
+    DEBUG = False
+else:
+    DEBUG = False
 
 LOGGING = {
     'version': 1,
@@ -40,7 +46,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/tmp/django/debug.log',
+            'filename': '/var/log/kissops_debug.log',
             'formatter': 'simple'
         },
         'console': {
@@ -78,7 +84,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'itoms',
-    'favicon',
     'login',
     'inventory.host',
     'inventory.project',
@@ -103,8 +108,7 @@ ROOT_URLCONF = 'kissops.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(TOP_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(TOP_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,11 +134,11 @@ DATABASES = {
     },
     'itoms_db': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'devdb_test',
-        'USER': 'dev',
-        'PASSWORD': 'dEvp@ssw0rd',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.getenv('MYSQL_DATABASE_NAME', 'devdb'),
+        'USER': os.getenv('MYSQL_DATABASE_USER', 'dev'),
+        'PASSWORD': os.getenv('MYSQL_DATABASE_PASSWORD', 'dEvp@ssw0rd'),
+        'HOST': os.getenv('MYSQL_DATABASE_HOST', '127.0.0.1'),
+        'PORT': os.getenv('MYSQL_DATABASE_PORT', '3306'),
         'CONN_MAX_AGE': None
     },
 

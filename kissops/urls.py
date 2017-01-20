@@ -23,6 +23,7 @@ from itoms.views import test_json
 
 from django.views.generic.base import RedirectView
 from django.conf import settings
+from django.conf.urls.static import static
 
 admin.autodiscover()
 
@@ -39,4 +40,4 @@ urlpatterns = [
     url(r'^add_hosts/$', add_hosts, name='add_hosts'),
     url(r'^modify_hosts/$', modify_hosts, name='modify_hosts'),
     url(r'^json/$', test_json, name='test_json'),
-]
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
