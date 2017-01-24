@@ -55,6 +55,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
     },
     'loggers': {
@@ -193,9 +194,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+local_static_root = ''
+remote_static_root = '/home/docker/volatile/static'
+
 FAVICON_PATH = os.path.join(STATIC_URL, 'images/favicon.ico')
 
-STATIC_ROOT = STATIC_URL
+# https://docs.djangoproject.com/en/1.10/howto/static-files/#deployment
+# $ python manage.py collectstatic
+STATIC_ROOT = remote_static_root
+
 STATICFILES_DIRS = [
     os.path.join(TOP_DIR, 'static'),
 ]

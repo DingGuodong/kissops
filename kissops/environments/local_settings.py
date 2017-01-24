@@ -55,6 +55,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
         },
     },
     'loggers': {
@@ -189,13 +190,19 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
 
-FAVICON_PATH = STATIC_URL + 'images/favicon.ico'
+local_static_root = 'C:\Users\Guodong\PycharmProjects\kissops\static'
+remote_static_root = 'C:\Users\Guodong\PycharmProjects\kissops\staticfiles'
 
-STATIC_ROOT = STATIC_URL
+FAVICON_PATH = os.path.join(STATIC_URL, 'images/favicon.ico')
+
+# https://docs.djangoproject.com/en/1.10/howto/static-files/#deployment
+# $ python manage.py collectstatic
+STATIC_ROOT = remote_static_root
+
 STATICFILES_DIRS = [
     os.path.join(TOP_DIR, 'static'),
 ]
@@ -203,9 +210,11 @@ STATICFILES_DIRS = [
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
 EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'noreply@example.com'
 EMAIL_HOST_PASSWORD = 'password here'
+EMAIL_TIMEOUT = 3
 DEFAULT_FROM_EMAIL = 'noreply <noreply@example.com>'
-ADMINS = 'dinggd@example.com'
+ADMINS = [('Guodong Ding', 'dinggd@example.com'), ]
