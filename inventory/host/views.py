@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from models import Hosts
 from django import forms
 
@@ -31,6 +32,7 @@ def database_error_decorator(func):
 
 
 @database_error_decorator
+@login_required(login_url='/login/')
 def list_hosts(request):
     hosts = Hosts.objects.order_by('-hostname')
     context = {
@@ -46,6 +48,7 @@ class add_hosts_form(forms.ModelForm):
 
 
 @database_error_decorator
+@login_required(login_url='/login/')
 def add_hosts(request):
     if request.method == 'POST':
         form = add_hosts_form(request.POST)
@@ -73,6 +76,7 @@ def add_hosts(request):
 
 
 @database_error_decorator
+@login_required(login_url='/login/')
 def modify_hosts(request):
     fields = Hosts.objects.all().values()
 

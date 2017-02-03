@@ -16,7 +16,7 @@ os.chdir(BASE_DIR)
 
 ENABLE_DEBUG_SAVED = os.getenv('ENABLE_DEBUG')
 RUN_ENVIRONMENT_SAVED = os.getenv('RUN_ENVIRONMENT')
-os.environ['ENABLE_DEBUG'] = 'False'
+os.environ['ENABLE_DEBUG'] = 'True'
 os.environ['RUN_ENVIRONMENT'] = 'local'
 
 print 'Enable debug: %s' % os.getenv('ENABLE_DEBUG')
