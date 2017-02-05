@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from django.shortcuts import render_to_response
+from django.shortcuts import render, render_to_response
 from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 
-
 # Create your views here.
+REDIRECT_FIELD_NAME = 'next'
+
+
 def index(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/login/')
@@ -18,7 +19,8 @@ def management(request):
     return HttpResponseRedirect('/admin/')
 
 
-def login(request):
+def login(request, redirect_field_name=REDIRECT_FIELD_NAME):
+    redirect_to = request.POST.get(redirect_field_name, request.GET.get(redirect_field_name, ''))
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -35,7 +37,10 @@ def login(request):
             return render(request, 'login.html', {'loginFailed': True})
         if user and user.is_active:
             auth.login(request, user)
-            return HttpResponseRedirect('/')
+            if redirect_to:
+                return HttpResponseRedirect(redirect_to)
+            else:
+                return HttpResponseRedirect('/')
         else:
             return render(request, 'login.html', {'loginFailed': True})
     elif request.method == 'GET' and request.user.is_authenticated():
@@ -87,5 +92,33 @@ def profile(request):
     return render_to_response('profile.html', {'username': username})
 
 
-def reset_password(request):
-    pass
+def reset_password(request, redirect_field_name=REDIRECT_FIELD_NAME):
+    redirect_to = request.POST.get(redirect_field_name, request.GET.get(redirect_field_name, ''))
+    if not request.user.is_authenticated:
+        if redirect_to:
+            return HttpResponseRedirect('/login/?next=' + redirect_to)
+        else:
+            return HttpResponseRedirect('/login/')
+    else:
+        if redirect_to:
+            return HttpResponseRedirect('/admin/password_change/?next=' + redirect_to)
+        else:
+            return HttpResponseRedirect('/admin/password_change/')
+            # if request.method == 'POST':
+            #     username = request.user.get_username()
+            #     password_old = request.POST.get('password_old')
+            #     password_input_first = request.POST.get('password_input_first')
+            #     password_input_second = request.POST.get('password_input_second')
+            #     if password_input_first and password_input_second:
+            #         if password_input_first == password_input_second:
+            #             password = password_input_first
+            #         else:
+            #             return HttpResponse("password not matched.")
+            #     user = auth.authenticate(username=username, password=password_old)
+            #     user.set_password(password)
+            #     user.save()
+            #     return HttpResponse("password changed.")
+            # elif request.method == 'GET':
+            #     user = request.user.get_username()
+            #
+            #     return HttpResponse("Welcome to user %s." % user)
