@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 
 # Create your views here.
-REDIRECT_FIELD_NAME = 'next'
+REDIRECT_FIELD_NAME = 'next'  # learn from django.contrib.admin.sites.login, django.contrib.auth.views.login
 
 
 def index(request):
@@ -103,7 +103,7 @@ def reset_password(request, redirect_field_name=REDIRECT_FIELD_NAME):
         if redirect_to:
             return HttpResponseRedirect('/admin/password_change/?next=' + redirect_to)
         else:
-            return HttpResponseRedirect('/admin/password_change/')
+            return HttpResponseRedirect('/admin/password_change/?next=/profile/')
             # if request.method == 'POST':
             #     username = request.user.get_username()
             #     password_old = request.POST.get('password_old')
