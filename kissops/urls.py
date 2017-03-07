@@ -19,7 +19,7 @@ from django.contrib import admin
 from kissops import views
 from login.views import login, logout, register, profile, management, reset_password
 from inventory.host.views import list_hosts, add_hosts, modify_hosts
-from itoms.views import test_json, itoms_app, django_admin
+from itoms.views import test_json, itoms_app, django_admin, app2question
 
 from django.views.generic.base import RedirectView
 from django.conf import settings
@@ -43,4 +43,5 @@ urlpatterns = [
                   url(r'^json/$', test_json, name='test_json'),
                   url(r'^itoms_app/$', itoms_app, name='itoms_app'),
                   url(r'^django_admin/$', django_admin, name='django_admin'),
+                  url(r'^app2question/$', app2question, name='app2question'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
