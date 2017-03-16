@@ -19,7 +19,7 @@ from django.contrib import admin
 from kissops import views
 from login.views import login, logout, register, profile, management, reset_password
 from inventory.host.views import list_hosts, add_hosts, modify_hosts
-from itoms.views import test_json, itoms_app, django_admin, app2question
+from itoms.views import post, test_json, itoms_app, django_admin, app2question
 
 from django.views.generic.base import RedirectView
 from django.conf import settings
@@ -40,6 +40,7 @@ urlpatterns = [
                   url(r'^list_hosts/$', list_hosts, name='list_hosts'),
                   url(r'^add_hosts/$', add_hosts, name='add_hosts'),
                   url(r'^modify_hosts/$', modify_hosts, name='modify_hosts'),
+                  url(r'^post/$', post, name='post'),
                   url(r'^json/$', test_json, name='test_json'),
                   url(r'^itoms_app/$', itoms_app, name='itoms_app'),
                   url(r'^django_admin/$', django_admin, name='django_admin'),
