@@ -23,10 +23,11 @@ def runserver():
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(BASE_DIR)
     try:
-        gevent.sleep(0.2)
         print "Admin --> %s" % admin_url
         print "App   --> %s" % app_url
-        os.system("python manage.py runserver")
+        gevent.sleep(0.2)
+        # TODO(Guodong Ding) python non-blocking execute system command
+        os.system("python manage.py runserver")  # blocking
     except OSError as e:
         print e.message
         sys.exit(1)
@@ -35,6 +36,7 @@ def runserver():
 def openwebbrowser():
     import webbrowser
     webbrowser.open(app_url)
+    webbrowser.open(admin_url)
 
 
 gevent.joinall([gevent.spawn(runserver), gevent.spawn(openwebbrowser)])
