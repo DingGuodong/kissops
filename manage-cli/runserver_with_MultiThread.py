@@ -36,6 +36,9 @@ def is_port_open(host, port):
 
 
 def runserver():
+    if not is_local_mysql_running():
+        bring_up_mysql()
+
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(BASE_DIR)
     try:
@@ -48,7 +51,7 @@ def runserver():
         sys.exit(1)
 
 
-def openwebbrowser():
+def openWebBrowser():
     import webbrowser
     import time
     while True:
@@ -60,9 +63,44 @@ def openwebbrowser():
             time.sleep(0.2)
 
 
+def is_local_mysql_running():
+    if is_port_open('127.0.0.1', 3306):
+        return True
+    else:
+        return False
+
+
+def bring_up_mysql():
+    import win32api
+    try:
+        win32api.ShellExecute(0, 'runas', 'sc', 'start MySQL56', '', 1)
+    except Exception as e:
+        def get_system_encoding():
+            import codecs
+            import locale
+            """
+            The encoding of the default system locale but falls back to the given
+            fallback encoding if the encoding is unsupported by python or could
+            not be determined.  See tickets #10335 and #5846
+            """
+            try:
+                encoding = locale.getdefaultlocale()[1] or 'ascii'
+                codecs.lookup(encoding)
+            except Exception:
+                encoding = 'ascii'
+            return encoding
+
+        DEFAULT_LOCALE_ENCODING = get_system_encoding()
+        print e
+        for item in list(e):
+            if isinstance(item, str):
+                print item.decode(DEFAULT_LOCALE_ENCODING),
+            else:
+                print item,
+
 threadingPool = list()
 threading_1 = threading.Thread(target=runserver)
-threading_2 = threading.Thread(target=openwebbrowser)
+threading_2 = threading.Thread(target=openWebBrowser)
 threadingPool.append(threading_1)
 threadingPool.append(threading_2)
 
