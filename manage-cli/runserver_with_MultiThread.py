@@ -36,8 +36,10 @@ def is_port_open(host, port):
 
 
 def runserver():
-    if not is_local_mysql_running():
-        bring_up_mysql()
+    if not is_local_mysql_port_running():
+        bring_up_mysql_service()
+        # TODO(Guodong Ding) If we do NOT allow mysql run, the main Thread won't exit,
+        # we hope it will exit when sub-Thread run into something wrong
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(BASE_DIR)
@@ -63,17 +65,31 @@ def openWebBrowser():
             time.sleep(0.2)
 
 
-def is_local_mysql_running():
+def is_local_mysql_port_running():
     if is_port_open('127.0.0.1', 3306):
         return True
     else:
         return False
 
 
-def bring_up_mysql():
+def is_local_mysql_service_running():
+    MYSQL_WIN32_SERVICE_NAME = 'MySQL56'
+    import win32service
+    import win32serviceutil
+    if win32serviceutil.QueryServiceStatus(MYSQL_WIN32_SERVICE_NAME)[1] == (
+                win32service.SERVICE_RUNNING or win32service.SERVICE_START_PENDING):
+        return True
+    else:
+        return False
+
+
+def bring_up_mysql_service():
     import win32api
+    import time
+    MYSQL_WIN32_SERVICE_NAME = 'MySQL56'
     try:
-        win32api.ShellExecute(0, 'runas', 'sc', 'start MySQL56', '', 1)
+        win32api.ShellExecute(0, 'runas', 'sc', 'start %s' % MYSQL_WIN32_SERVICE_NAME, '', 1)
+        time.sleep(2)  # it is not essential
     except Exception as e:
         def get_system_encoding():
             import codecs
@@ -97,6 +113,8 @@ def bring_up_mysql():
                 print item.decode(DEFAULT_LOCALE_ENCODING),
             else:
                 print item,
+        raise RuntimeError
+
 
 threadingPool = list()
 threading_1 = threading.Thread(target=runserver)
@@ -105,8 +123,11 @@ threadingPool.append(threading_1)
 threadingPool.append(threading_2)
 
 if __name__ == '__main__':
-    for thread in threadingPool:
-        thread.setDaemon(False)
-        thread.start()
+    try:
+        for thread in threadingPool:
+            thread.setDaemon(False)
+            thread.start()
 
-    thread.join()
+        thread.join()
+    except RuntimeError:
+        print thread.exc_traceback
