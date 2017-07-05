@@ -1,6 +1,7 @@
 # IntelliJ project files
 .idea
 itoms
+cmdb
 kissops/migrations
 login/migrations
 inventory/host/migrations
