@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'inventory.datacenter',
     'inventory.device',
     'inventory.machine',
+    'cmdb',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -149,6 +150,16 @@ DATABASES = {
         'CONN_MAX_AGE': None
     },
 
+    'cmdb_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MYSQL_DATABASE_NAME', 'cmdb'),
+        'USER': os.getenv('MYSQL_DATABASE_USER', 'dev'),
+        'PASSWORD': os.getenv('MYSQL_DATABASE_PASSWORD', 'dEvp@ssw0rd'),
+        'HOST': os.getenv('MYSQL_DATABASE_HOST', '127.0.0.1'),
+        'PORT': os.getenv('MYSQL_DATABASE_PORT', '3306'),
+        'CONN_MAX_AGE': None
+    },
+
 }
 
 # Using routers
@@ -156,12 +167,14 @@ DATABASES = {
 
 DATABASE_ROUTERS = [
     'kissops.database_routers.ItomsRouter',
+    'kissops.database_routers.CmdbRouter',
 ]
 
 DATABASE_APPS_MAPPING = {
     # example:
     # 'app_name':'database_name',
     'itoms': 'itoms_db',
+    'cmdb': 'cmdb_db',
 }
 
 # Password validation
