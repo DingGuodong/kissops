@@ -29,6 +29,7 @@ admin.autodiscover()
 
 urlpatterns = [
                   url(r'^favicon.ico$', RedirectView.as_view(url=getattr(settings, 'FAVICON_PATH'))),
+                  url(r'^robots.txt$', RedirectView.as_view(url=getattr(settings, 'ROBOTS_PATH'))),
                   url(r'^admin/', admin.site.urls),
                   url(r'^management$', management, name='management'),
                   url(r'^$', views.index, name='index'),

@@ -12,6 +12,21 @@ class Datacenters(models.Model):
         # https://docs.djangoproject.com/en/dev/ref/models/options/#verbose-name-plural
         verbose_name_plural = "Datacenters"
 
+    datacenter_type = (
+        (0, 'cloud'),
+        (1, 'physical'),
+        (2, 'Mixed'),
+        (3, 'Unknown')
+    )
+
+    service_provider = (
+        (0, 'CU'),
+        (1, 'CN'),
+        (2, 'Cloud'),
+        (3, 'Mixed'),
+        (4, 'Unknown')
+    )
+
     uuid = models.UUIDField(primary_key=True, auto_created=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Datacenter Name',
                             help_text="Datacenter Name")
@@ -21,11 +36,11 @@ class Datacenters(models.Model):
     network = models.TextField(blank=True, null=True, verbose_name=u"IP Network")
     bandwidth = models.CharField(max_length=64, blank=True, null=True, verbose_name=u'Band Width')
     type = models.IntegerField(verbose_name=u"Type",
-                               choices=((0, 'cloud'), (1, 'physical'), (2, 'Mixed'), (3, 'Unknown')), blank=True,
+                               choices=datacenter_type, blank=True,
                                null=True)
     address = models.CharField(max_length=128, blank=True, null=True, verbose_name=u"Address")
     operator = models.IntegerField(verbose_name=u"Operator",
-                                   choices=((0, 'CU'), (1, 'CN'), (2, 'Cloud'), (3, 'Mixed'), (4, 'Unknown')),
+                                   choices=service_provider,
                                    blank=True,
                                    null=True)
     date_created = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name=u'Created on',

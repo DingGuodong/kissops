@@ -28,3 +28,10 @@ class Devices(models.Model):
     username = models.CharField(max_length=20, blank=True, null=True, verbose_name=u'Username', help_text="Username")
     password = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Password',
                                 help_text="user password")
+
+    # using this for ForeignKey used by
+    def __str__(self):  # __unicode__ on Python 2
+        return self.name
+
+    def __unicode__(self):
+        return self.name

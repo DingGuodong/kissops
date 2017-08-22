@@ -97,6 +97,7 @@ INSTALLED_APPS = [
     'inventory.datacenter',
     'inventory.device',
     'inventory.machine',
+    'inventory.microservice',
     'cmdb',
 ]
 
@@ -217,6 +218,8 @@ local_static_root = 'C:\Users\Guodong\PycharmProjects\kissops\static'
 remote_static_root = 'C:\Users\Guodong\PycharmProjects\kissops\staticfiles'
 
 FAVICON_PATH = os.path.join(STATIC_URL, 'images/favicon.ico')
+
+ROBOTS_PATH = os.path.join(STATIC_URL, 'robots.txt')
 
 # https://docs.djangoproject.com/en/1.10/howto/static-files/#deployment
 # $ python manage.py collectstatic

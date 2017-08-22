@@ -14,6 +14,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(BASE_DIR)
 try:
+    print "build app once, deliver it anywhere with modify 'apps.py'"
     app_name = raw_input("What app name would you like create?\n")
     if app_name != "":
         os.system("python manage.py startapp %s" % app_name)

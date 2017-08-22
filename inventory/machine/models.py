@@ -96,3 +96,9 @@ class Machines(models.Model):
     os_family = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'OS Family',
                                  help_text="OS Family")
     comment = models.TextField(blank=True, null=True, verbose_name=u"Comment")
+
+    def __str__(self):  # __unicode__ on Python 2
+        return self.name
+
+    def __unicode__(self):
+        return self.name

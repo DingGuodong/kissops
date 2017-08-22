@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 import uuid
+from inventory.machine.models import Machines
 
 
 # Create your models here.
@@ -15,6 +16,8 @@ class Hosts(models.Model):
     uuid = models.UUIDField(primary_key=True, auto_created=True, default=uuid.uuid4, editable=False)
     hostname = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Hostname',
                                 help_text="host name, IP address or name.")
+    machine = models.ForeignKey(Machines, related_name=u'machines_hosts', blank=True, null=True,
+                                on_delete=models.SET_NULL)
     type = models.IntegerField(default=0, blank=True, null=True, verbose_name=u'Type',
                                choices=((0, u'UNIX/Linux'), (1, u'Windows')),
                                help_text="0, UNIX/Linux; 1, Windows")
@@ -35,8 +38,8 @@ class Hosts(models.Model):
     password = models.CharField(max_length=128, blank=True, null=True, verbose_name=u'Password',
                                 help_text="user password")
 
-    # def __str__(self):  # __unicode__ on Python 2
-    #     return self.hosts_hosts
-    #
-    # def __unicode__(self):
-    #     return self.hosts_hosts
+    def __str__(self):  # __unicode__ on Python 2
+        return self.hostname
+
+    def __unicode__(self):
+        return self.hostname
