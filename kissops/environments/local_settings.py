@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     'inventory.device',
     'inventory.machine',
     'inventory.microservice',
+    'inventory.credential',
     'cmdb',
 ]
 
