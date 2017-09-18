@@ -18,7 +18,7 @@ os.chdir(BASE_DIR)
 try:
     print "BUILD APP ONCE, DELIVER IT ANYWHERE WITH MODIFY 'APPS.PY'."
     app_name = raw_input("What app name would you like create?\n")
-    app_directory = raw_input("What app directory would you like give?\n")
+    app_directory = raw_input("What app directory would you like give? default is \"%s\"\n" % BASE_DIR)
     if app_name != "" and app_directory != '':
         if not os.path.exists(app_directory):
             print "directory your given does not exist, create it!"
