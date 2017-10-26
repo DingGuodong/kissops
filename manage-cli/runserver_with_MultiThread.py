@@ -11,6 +11,7 @@ Create Time:        13:47
 import os
 import sys
 import threading
+from collections import Iterable
 
 admin_url = 'http://127.0.0.1:8000/admin/'
 app_url = 'http://127.0.0.1:8000/admin/itoms/app/'
@@ -102,17 +103,21 @@ def bring_up_mysql_service():
             try:
                 encoding = locale.getdefaultlocale()[1] or 'ascii'
                 codecs.lookup(encoding)
-            except Exception:
+            except Exception as _:
+                del _
                 encoding = 'ascii'
             return encoding
 
         DEFAULT_LOCALE_ENCODING = get_system_encoding()
         print e
-        for item in list(e):
-            if isinstance(item, str):
-                print item.decode(DEFAULT_LOCALE_ENCODING),
-            else:
-                print item,
+        print e.args
+        print e.message
+        if isinstance(e, Iterable):
+            for item in list(e):
+                if isinstance(item, str):
+                    print item.decode(DEFAULT_LOCALE_ENCODING),
+                else:
+                    print item,
         raise RuntimeError
 
 
