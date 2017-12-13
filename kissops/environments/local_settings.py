@@ -8,9 +8,14 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
+
+Authentication
+Auth needs to be pluggable. --Jacob Kaplan-Moss, "REST worst practices"
+http://www.django-rest-framework.org/api-guide/authentication/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,7 +60,10 @@ if not DEBUG:
                 'formatter': 'simple'
             },
             'console': {
+                'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
+                'stream': sys.stdout,
+                'formatter': 'verbose'
             },
             'mail_admins': {
                 'level': 'ERROR',
@@ -102,6 +110,7 @@ INSTALLED_APPS = [
     'cmdb',
     'api',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 REST_FRAMEWORK = {

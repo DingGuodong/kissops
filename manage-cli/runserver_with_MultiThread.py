@@ -17,6 +17,38 @@ admin_url = 'http://127.0.0.1:8000/admin/'
 app_url = 'http://127.0.0.1:8000/admin/itoms/app/'
 
 
+def decoding(text):
+    import sys
+    import codecs
+    import locale
+
+    if isinstance(text, unicode):
+        return text
+    elif isinstance(text, (basestring, str)):
+        pass
+    else:
+        return text  # do not need decode, return original object if type is not instance of string type
+        # raise RuntimeError("expected type is str, but got {type} type".format(type=type(text)))
+
+    mswindows = (sys.platform == "win32")
+
+    try:
+        encoding = locale.getdefaultlocale()[1] or ('ascii' if not mswindows else 'gbk')
+        codecs.lookup(encoding)  # codecs.lookup('cp936').name == 'gbk'
+    except Exception as _:
+        del _
+        encoding = 'ascii' if not mswindows else 'gbk'  # 'gbk' is Windows default encoding in Chinese language 'zh-CN'
+
+    msg = text
+    if mswindows:
+        try:
+            msg = text.decode(encoding)
+            return msg
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            pass
+    return msg
+
+
 def is_port_open(host, port):
     """
     :param host: str
@@ -85,7 +117,17 @@ def is_local_mysql_service_running():
 
 
 def bring_up_mysql_service():
-    import win32api
+    try:
+        import win32api  # 64 bit module is required in 64 bit python, or you will get '不是有效的 Win32 应用程序。'
+    except ImportError as e:
+        import re as win32api  # ignore weak warning with a fake import, we will terminate it any way with a sys.exit(1)
+        print e
+        if isinstance(e.args, Iterable):
+            for arg in e.args:
+                print decoding(arg)
+        print decoding(e.message)
+        sys.exit(1)
+
     import time
     MYSQL_WIN32_SERVICE_NAME = 'MySQL56'
     try:
