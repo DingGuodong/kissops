@@ -12,3 +12,4 @@ db.sqlite3
 staticfiles
 migrations
 django-docs
+/kissops/environments/local_settings.py
