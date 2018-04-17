@@ -1,7 +1,11 @@
-from django.shortcuts import render, render_to_response
+# encoding: utf-8
+# -*- coding: utf8 -*-
 from django.contrib import auth
-from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.management import settings
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
 
 # Create your views here.
 REDIRECT_FIELD_NAME = 'next'  # learn from django.contrib.admin.sites.login, django.contrib.auth.views.login
@@ -92,33 +96,202 @@ def profile(request):
     return render_to_response('profile.html', {'username': username})
 
 
-def reset_password(request, redirect_field_name=REDIRECT_FIELD_NAME):
-    redirect_to = request.POST.get(redirect_field_name, request.GET.get(redirect_field_name, ''))
-    if not request.user.is_authenticated:
-        if redirect_to:
-            return HttpResponseRedirect('/login/?next=' + redirect_to)
-        else:
-            return HttpResponseRedirect('/login/')
+def reset_password(request):
+    from django.contrib.auth.hashers import make_password
+    if "can_change_password" in request.session.keys():
+        if request.session['can_change_password']:
+            can_change_password = True
+            email = request.session.get('user_email')
     else:
-        if redirect_to:
-            return HttpResponseRedirect('/admin/password_change/?next=' + redirect_to)
+        can_change_password = False
+
+    if not can_change_password:
+        return HttpResponseRedirect('/')
+    else:
+        password1 = request.POST.get("password1", "")
+        password2 = request.POST.get("password2", "")
+        if password1 == password2:
+            password = password1
         else:
-            return HttpResponseRedirect('/admin/password_change/?next=/profile/')
-            # if request.method == 'POST':
-            #     username = request.user.get_username()
-            #     password_old = request.POST.get('password_old')
-            #     password_input_first = request.POST.get('password_input_first')
-            #     password_input_second = request.POST.get('password_input_second')
-            #     if password_input_first and password_input_second:
-            #         if password_input_first == password_input_second:
-            #             password = password_input_first
-            #         else:
-            #             return HttpResponse("password not matched.")
-            #     user = auth.authenticate(username=username, password=password_old)
-            #     user.set_password(password)
-            #     user.save()
-            #     return HttpResponse("password changed.")
-            # elif request.method == 'GET':
-            #     user = request.user.get_username()
-            #
-            #     return HttpResponse("Welcome to user %s." % user)
+            password = ""
+        if password and email:
+            user = User.objects.get(email=email)
+            user.password = make_password(password)  # from django.contrib.auth.forms import PasswordRestForm
+            user.save()
+            message = {
+                "error": False,
+                "title": "Your password is changed successfully",
+                "message": "Your password is changed successfully",
+                'stage': 2
+            }
+        elif not email:
+            message = {
+                "error": True,
+                "title": "Bad Request",
+                "message": "Bad Request",
+                'stage': 1
+            }
+            # TODO(Guodong Ding) redirect to /
+            return render(request, 'reset_password.html', message)
+        else:
+            message = {
+                "error": False,
+                "title": "Reset your password",
+                "message": "Reset your password",
+                'stage': 1
+            }
+        return render(request, 'reset_password.html', message)
+
+
+def gen_security_code(code_length=16):
+    import string
+    from random import sample
+    # security_code_char = string.ascii_letters + string.digits + string.punctuation
+    security_code_char = string.ascii_letters + string.digits
+    length = code_length if code_length <= len(security_code_char) else len(security_code_char)
+
+    return "".join(sample(security_code_char, length))
+
+
+def get_user_email_by_username(username):
+    user = User.objects.get(username=username)
+    email = user.email
+    if email:
+        return email
+    else:
+        return
+
+
+def mail_code_to_user(recipient, code, email_type='register'):
+    from django.core.mail import send_mail
+
+    if email_type == 'register':
+        subject = "AdminLTE - Your security code for registration"
+        message = "Your security code is \"%s\"" % code
+    elif email_type == 'forget':
+        subject = "AdminLTE - Your security code for password reset"
+        message = "Your security code is \"%s\"" % code
+    else:
+        return 0
+    return send_mail(
+        subject,
+        message,
+        settings.EMAIL_FROM,
+        [recipient],
+        fail_silently=False,
+    )
+
+
+def forget_password(request):
+    import time
+    import datetime
+    """
+    Django 实现忘记密码 重置密码功能
+    """
+
+    # 如果用户没有post过数据，则初始化session
+    if 'user_do_post' not in request.session.keys():
+        request.session['user_try_times'] = 0  # 用户尝试提交次数
+        request.session['blocked_time'] = time.time()
+        request.session['blocked_times'] = 0  # 用户被屏蔽次数
+
+    if request.method == 'POST':
+        request.session['user_do_post'] = True
+
+        # 安全治理：防范用户恶意提交
+        # 安全规则：超过最大post次数后，5分钟以后再试，期间再次尝试post则刷新屏蔽时间，安全规则验证通过后则解除屏蔽
+        if request.session['user_try_times'] > 5 and time.time() - request.session['blocked_time'] < datetime.timedelta(
+                minutes=5).seconds:
+            request.session['blocked_times'] += 1
+            request.session['blocked_time'] = time.time()  # 期间再次尝试post则刷新屏蔽时间
+            message = {
+                'error': True,
+                'title': "Max attempt times reached",
+                'message': "Max attempt times reached, try later",  # TODO(Guodong Ding) time left, session expired
+                'stage': 1
+            }
+
+            return render(request, 'forgot_password.html', message)
+
+        if 'user_try_times' in request.session.keys():
+            request.session['user_try_times'] += 1
+
+        user_code = request.POST.get('security_code', "")
+        if user_code:
+            if user_code == request.session['security_code']:
+                request.session['user_try_times'] = 0  # 重置用户尝试post次数
+                request.session['blocked_times'] = 0  # 重置用户被屏蔽次数
+                request.session['can_change_password'] = True
+                return HttpResponseRedirect('/reset_password/')
+            else:
+                message = {
+                    "error": True,
+                    "title": "Bad security code",
+                    "message": "bad security code",
+                    'stage': 2
+                }
+                return render(request, 'forgot_password.html', message)
+        username = request.POST.get('username', "")
+        if username != "":
+            try:
+                user = User.objects.get(username=username)
+                if user.username == username:
+                    request.session['username'] = username
+            except ObjectDoesNotExist:
+                message = {
+                    "error": True,
+                    "title": "User not exist",
+                    "message": "User not exist",
+                    'stage': 1
+                }
+                return render(request, 'forgot_password.html', message)
+        email = request.POST.get('email', "")
+        if email == "":
+            email = "" if username == "" else get_user_email_by_username(request.session['username'])
+        else:
+            try:
+                User.objects.get(email=email)
+            except ObjectDoesNotExist:
+                email = ""
+        if email:
+            request.session['security_code'] = security_code = gen_security_code()
+            status = mail_code_to_user(email, security_code, email_type="forget")
+            if not status:
+                message = {
+                    "error": True,
+                    "title": "Email sent failed",
+                    "message": "email send failed, maybe due to bad username or email",
+                    'stage': 1
+                }
+            else:
+                request.session['user_email'] = email
+                message = {
+                    "error": False,
+                    "title": "Email sent successfully",
+                    "message": "email sent successfully, please input security code",
+                    'stage': 2
+                }
+        elif not email:
+            message = {
+                "error": True,
+                "title": "Email not exist",
+                "message": "Email not exist",
+                'stage': 1
+            }
+            return render(request, 'forgot_password.html', message)
+        else:
+            message = {
+                "error": True,
+                "title": "Bad request",
+                "message": "bad request, input your username or email, then submit.",
+                'stage': 1
+            }
+        return render(request, 'forgot_password.html', message)
+    elif request.method == 'GET':
+        message = {
+            'error': False,
+            'title': "Forget your password",
+            'message': "input your username or email, then submit.",
+            'stage': 1
+        }
+        return render(request, 'forgot_password.html', message)
